@@ -17,3 +17,5 @@ lib
 lib64
 raw_data/
 questionnaires/
+presentation/
+.vscode/
