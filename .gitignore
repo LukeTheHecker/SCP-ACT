@@ -1,10 +1,21 @@
-/documents
-*.ipynb
+# Folders
+raw_data/
+questionnaires/
+presentation/
+bial/
+figures/
+Formulare/
+reports/
+.vscode/
+
+# Files
+# *.ipynb
 *.pyc
 *.pyo
 *.mp3
 *.wav
 
+# Packaging
 .installed.cfg
 bin
 develop-eggs
@@ -15,7 +26,4 @@ parts
 src/*.egg-info
 lib
 lib64
-raw_data/
-questionnaires/
-presentation/
-.vscode/
+
