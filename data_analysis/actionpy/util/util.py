@@ -1,7 +1,8 @@
 import numpy as np
 from copy import deepcopy
 from matplotlib.backends.backend_pdf import PdfPages
-
+import os
+import matplotlib.pyplot as plt
 def multipage(filename, figs=None, dpi=300, png=False):
     ''' Saves all open (or list of) figures to filename.pdf with dpi''' 
     pp = PdfPages(filename)
