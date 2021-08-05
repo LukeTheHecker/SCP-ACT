@@ -408,7 +408,7 @@ def get_acfw(x, nan_handling='interp_nan', detrend_signal=True):
     return fwhm
 
 
-def get_ptp_amplitudes(x, distance=2, sfreq=100):
+def get_ptp_amplitudes(x, distance=None, sfreq=100, plot=False):
     ''' Calculate peak-to-peak amplitudes in a signal.
     Parameters
     ----------
@@ -421,39 +421,26 @@ def get_ptp_amplitudes(x, distance=2, sfreq=100):
     peak_to_peak_amplitudes : numpy.ndarray containing the p2p amplitudes
 
     '''
-    peak_to_peak_latencies = []
-    peak_to_peak_amplitudes = []
-
-    distance = sfreq*distance
-
-    pos_peak_idc = find_peaks(x, distance=distance)[0]
-    neg_peak_idc = find_peaks(-1*x, distance=distance)[0]
-
-    for pos_peak_idx in pos_peak_idc:
-        
-        next_negative_idc = np.where(neg_peak_idc>pos_peak_idx)[0]
-        
-        if next_negative_idc.size==0:
-            break
-        else:
-            next_negative_idx = next_negative_idc[0]
-        
-        neg_peak_idx = neg_peak_idc[next_negative_idx]
-
-        idx_pair = (pos_peak_idx, neg_peak_idx)
-        diff = np.abs(idx_pair[0]-idx_pair[1])
-        
-        peak_to_peak_latencies.append( diff / sfreq )
-        amp_diff = np.abs(x[pos_peak_idx] - x[neg_peak_idx])
-        peak_to_peak_amplitudes.append( amp_diff )
-
-    peak_to_peak_latencies = np.array(peak_to_peak_latencies)
-    peak_to_peak_amplitudes = np.array(peak_to_peak_amplitudes)
-
-    return peak_to_peak_amplitudes
+    return peak_to_peak_helper(x, distance=distance, sfreq=sfreq)[0]
 
 
-def get_ptp_latencies(x, distance=2, sfreq=100):
+def get_ptp_latencies(x, distance=None, sfreq=100):
+    ''' Calculate peak-to-peak amplitudes in a signal.
+    Parameters
+    ----------
+    x : numpy.ndarray, 1D time series (e.g. SCP)
+    distance : float/int, specifies the minimum distance between two consecutive peaks
+    sfreq : int, sampling frequency of the signal x
+    
+    Return
+    ------
+    peak_to_peak_amplitudes : numpy.ndarray containing the p2p amplitudes
+    
+    '''
+
+    return peak_to_peak_helper(x, distance=distance, sfreq=sfreq)[1]
+
+def peak_to_peak_helper(x, distance=None, sfreq=100):
     ''' Calculate peak-to-peak amplitudes in a signal.
     Parameters
     ----------
@@ -468,13 +455,14 @@ def get_ptp_latencies(x, distance=2, sfreq=100):
     '''
     peak_to_peak_latencies = []
     peak_to_peak_amplitudes = []
-
-    distance = sfreq*distance
+    
+    if distance is not None:
+        distance = sfreq*distance
 
     pos_peak_idc = find_peaks(x, distance=distance)[0]
     neg_peak_idc = find_peaks(-1*x, distance=distance)[0]
 
-    for pos_peak_idx in pos_peak_idc:
+    for i, pos_peak_idx in enumerate(pos_peak_idc):
         
         next_negative_idc = np.where(neg_peak_idc>pos_peak_idx)[0]
         
@@ -484,6 +472,10 @@ def get_ptp_latencies(x, distance=2, sfreq=100):
             next_negative_idx = next_negative_idc[0]
         
         neg_peak_idx = neg_peak_idc[next_negative_idx]
+        
+        if i!= len(pos_peak_idc)-1:
+            if pos_peak_idc[i+1] < neg_peak_idx:
+                continue
 
         idx_pair = (pos_peak_idx, neg_peak_idx)
         diff = np.abs(idx_pair[0]-idx_pair[1])
@@ -495,4 +487,8 @@ def get_ptp_latencies(x, distance=2, sfreq=100):
     peak_to_peak_latencies = np.array(peak_to_peak_latencies)
     peak_to_peak_amplitudes = np.array(peak_to_peak_amplitudes)
 
-    return peak_to_peak_latencies
+    return peak_to_peak_amplitudes, peak_to_peak_latencies
+
+def detrended_std(x):
+    x = detrend(x)
+    return np.std(x)
