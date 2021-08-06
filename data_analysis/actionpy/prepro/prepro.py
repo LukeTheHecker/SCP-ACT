@@ -7,6 +7,7 @@ import os
 import matplotlib.pyplot as plt
 from autoreject import Ransac
 import ntpath
+from ..util import filtparams
 
 EXP_DUR_SECONDS = int(7*60)
 
@@ -36,7 +37,7 @@ def preprocessing(pth, verbose=False):
     raw.set_montage('standard_1020',  on_missing='warn', verbose=verbose)  # verbose for less output text
 
     # first filtering
-    raw.filter(0.005, 45, n_jobs=-1, method='iir', verbose=verbose)
+    raw.filter(0.005, 45, n_jobs=-1, verbose=verbose, **filtparams)
     
     # Resampling for lower computation times
     raw.resample(100)
@@ -137,7 +138,7 @@ def eog_ica(raw, verbose=False):
     '''
     
     # Filter data to remove drifts which helps ICA
-    raw_filt = raw.copy().filter(1, None, method='iir', verbose=verbose)
+    raw_filt = raw.copy().filter(1, None, verbose=verbose, **filtparams)
     
     # Add an improvised HEOG channel to the data object
     raw_filt = add_heog(raw_filt)
