@@ -1,12 +1,12 @@
+from datetime import datetime
 from psychopy import visual, core, monitors, event
 from funs import *
 from texts import text_drmt as instruction
 from texts import text_end
-
 # Audio
-# path_drmt = r'C:\Users\Lukas\Documents\projects\SCP-ACT-main\stimulus_presentation\assets\DRMT_ohne_Stille.wav'
-# path_silence = r'C:\Users\Lukas\Documents\projects\SCP-ACT-main\stimulus_presentation\assets\Stille_und_Ton.wav'
-path = r'C:\Users\Lukas\Documents\projects\SCP-ACT-main\stimulus_presentation\assets\drmt.wav'
+path_drmt = r'C:\Users\Lukas\Documents\projects\SCP-ACT\stimulus_presentation\assets\DRMT_ohne_Stille.wav'
+path_silence = r'C:\Users\Lukas\Documents\projects\SCP-ACT\stimulus_presentation\assets\Stille_und_Ton.wav'
+# path = r'C:\Users\Lukas\Documents\projects\SCP-ACT-main\stimulus_presentation\assets\drmt.wav'
 
 # Timing stuff
 time_to_target = 60 * 7
@@ -30,13 +30,16 @@ timer = core.CountdownTimer(time_to_target)
 # Trigger to show start of audio
 trig(ser, trig_expstart)
 # Play DRMT session
-play_audio(path)
+print(f'PLAY DRMT TALK: {datetime.now().strftime("%H:%M:%S")}')
+play_audio(path_drmt)
 
 # Trigger to show end of audio
-# trig(ser, trig_silence)
+trig(ser, trig_silence)
 
 # Play silence and final sound
-# play_audio(path_silence)
+print(f'PLAY SILENCE AND BELL: {datetime.now().strftime("%H:%M:%S")}')
+play_audio(path_silence)
 trig(ser, trig_expend)
+print(f'Done playing: {datetime.now().strftime("%H:%M:%S")}')
 
 show_instruction(mywin, text_end)
