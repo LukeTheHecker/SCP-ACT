@@ -30,7 +30,4 @@ second_tasks[rest_idx] = second_tasks[drmt_idx]
 second_tasks[drmt_idx] = tmp
 
 all_tasks = np.append(np.append(tasks, expectation_task), second_tasks)
-
-for i, sel in enumerate(all_tasks):
-    print(f'Condition {i+1}:\n{sel}')
-
+print(all_tasks)
