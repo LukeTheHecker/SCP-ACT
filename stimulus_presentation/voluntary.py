@@ -1,34 +1,45 @@
-from psychopy import visual, core, monitors
-import numpy as np
-import time
+from psychopy import visual, core, monitors, event
+import serial
 from funs import *
+from texts import text_voluntary as instruction
+from texts import text_end
 
-# Tiuming stuff
-time_to_target = 5  # 60 * 6.5
-end_of_experiment_time = 2  # 20
+# Timing stuff
+time_to_target = 60 * 7
+end_of_experiment_time = 2
 
+# Trigger setting
+ser = initialize_serial_port()
+
+trig_expstart = TRIGGER_CODES['2']
+trig_expend = TRIGGER_CODES['4']
 
 #create a window
 mywin = visual.Window([1920, 1080], monitor='testMonitor', units="deg", fullscr=True)
+mywin.mouseVisible = False
+
+# Instruction
+show_instruction(mywin, instruction)
 
 # Prepare the objects
 # Countdown
-countdown = visual.TextStim(win=mywin, text='')
+fixation = visual.TextStim(win=mywin, text='+')
 timer = core.CountdownTimer(time_to_target)
 
 
-while timer.getTime() > -1:  # after 5s will become negative
-    # print(timer.getTime())
-    countdown_time = np.clip(timer.getTime(), a_min=0, a_max=9999999)
-    countdown.text = seconds_to_hh_mm_ss(int(round(countdown_time)))
- 
-    countdown.draw()
+
+
+# Trigger to show start of experiment
+trig(ser, trig_expstart)
+
+RespEvent = event.getKeys()
+while timer.getTime() > -1 and not 'q' in RespEvent:  # after 5s will become negative
+    fixation.draw()
     mywin.flip()
     core.wait(0.01)
+    RespEvent = event.getKeys()
 
-mywin.flip()
-core.wait(1)
+trig(ser, trig_expend)
 
-mywin.flip()
-core.wait(end_of_experiment_time)
+show_instruction(mywin, text_end)
 

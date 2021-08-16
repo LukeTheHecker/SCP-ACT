@@ -1,15 +1,36 @@
 import numpy as np
+from copy import deepcopy
 
-tasks = [
-    "Expectation\n",
-    "Resting state\nDRMT-session\nDRMT resting state",
+expectation_task = "Expectation\n",
+
+tasks = np.array([
+    "Resting state\n",
+    "DRMT\n",
     "Kornhuber Task\n"
-]
+])
+np.random.shuffle(tasks)
 
-selection = np.arange(len(tasks))
+rest_idx = np.where(tasks=="Resting state\n")[0][0]
+drmt_idx = np.where(tasks=="DRMT\n")[0][0]
 
-np.random.shuffle(selection)
+while rest_idx > drmt_idx:
+    np.random.shuffle(tasks)
+    rest_idx = np.where(tasks=="Resting state\n")[0][0]
+    drmt_idx = np.where(tasks=="DRMT\n")[0][0]
 
-for i, sel in enumerate(selection):
-    print(f'Condition {i+1}:\n{tasks[sel]}')
+
+print(tasks)
+
+second_tasks = deepcopy(tasks[::-1])
+print(tasks)
+rest_idx = np.where(second_tasks=="Resting state\n")[0][0]
+drmt_idx = np.where(second_tasks=="DRMT\n")[0][0]
+tmp = second_tasks[rest_idx]
+second_tasks[rest_idx] = second_tasks[drmt_idx]
+second_tasks[drmt_idx] = tmp
+
+all_tasks = np.append(np.append(tasks, expectation_task), second_tasks)
+
+for i, sel in enumerate(all_tasks):
+    print(f'Condition {i+1}:\n{sel}')
 
